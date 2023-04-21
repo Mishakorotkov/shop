@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block head %}{% endblock %}</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <button onclick="document.location='/admin/main'">На главную</button>
+    {% block form %}{% endblock %}
+    {% block out %}{% endblock %}
+</body>
+</html>

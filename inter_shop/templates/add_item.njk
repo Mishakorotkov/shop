@@ -1,0 +1,68 @@
+{% extends "add_item.html" %}
+{% block form %}
+<div>
+    <h3>Цвет:</h3>
+{% for i in mass.color %}
+<div>
+    <input type="radio" name="color" value="{{ i.id }}">
+    <label>{{ i.name }}</label>
+</div>
+{% endfor %}
+</div>
+<br>
+<div>
+    <h3>Создател:</h3>
+{% for i in mass.creator %}
+<div>
+    <input type="radio" name="creator" value="{{ i.id }}">
+    <label>{{ i.name }}</label>
+</div>
+{% endfor %}
+</div>
+<br>
+<div>
+    <h3>Материал:</h3>
+{% for i in mass.material %}
+<div>
+    <input type="radio" name="material" value="{{ i.id }}">
+    <label>{{ i.name }}</label>
+</div>
+{% endfor %}
+</div>
+<br>
+<div>
+    <h3>Размер:</h3>
+{% for i in mass.size %}
+<div>
+    <input type="radio" name="size" value="{{ i.id }}">
+    <label>{{ i.name }}</label>
+</div>
+{% endfor %}
+</div>
+<br>
+<div>
+    <h3>Тип:</h3>
+{% for i in mass.type %}
+<div>
+    <input type="radio" name="type" value="{{ i.id }}">
+    <label>{{ i.name }}</label>
+</div>
+{% endfor %}
+</div>
+<br>
+<div>
+    <h3>Для кого:</h3>
+    <div>
+        <input type="radio" name="for" value="мужское">
+        <label>мужское</label>
+    </div>
+    <div>
+        <input type="radio" name="for" value="женское">
+        <label>женское</label>
+    </div>
+    <div>
+        <input type="radio" name="for" value="детское">
+        <label>детское</label>
+    </div>
+</div>
+{% endblock %}

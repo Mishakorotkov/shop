@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Добавление товара</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <button onclick="document.location='/admin/main'">На главную</button>
+    <form action="/admin/add" method="POST">
+        <div>Введите название: <input name="name"></div>
+        <div>Введите цену: <input name="price"></div>
+        {% block form %}{% endblock %}
+        <input type="submit" value='добавить'>
+    </form>
+</body>
+</html>

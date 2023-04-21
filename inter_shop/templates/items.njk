@@ -1,0 +1,27 @@
+{% extends "items.html" %}
+{% block items %}
+{% for i in ite %}
+<div>
+    <dl>
+        <h2>{{ i.name }}</h2>
+        <h3>{{ i.price }}р</h3>
+        <dt><b>Цвет:</b></dt>
+        <dd>{{ i.color }}</dd>
+        <dt><b>Создатель:</b></dt>
+        <dd>{{ i.creator }}</dd>
+        <dt><b>Материал:</b></dt>
+        <dd>{{ i.material }}</dd>
+        <dt><b>Размер:</b></dt>
+        <dd>{{ i.size }}</dd>
+        <dt><b>Тип:</b></dt>
+        <dd>{{ i.type }}</dd>
+        <dt><b>Для:</b></dt>
+        <dd>{{ i.fors }}</dd>
+        <form action="/admin/items" method="POST">
+            <button  type="submit" name="del" value="{{ i.id }}">Удалить</button>
+        </form>
+    </dl>
+</div>
+<br>
+{% endfor %}
+{% endblock %}

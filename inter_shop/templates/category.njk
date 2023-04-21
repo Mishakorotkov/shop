@@ -1,0 +1,21 @@
+{% extends "add.html" %}
+{% block head %}
+{{ head }}
+{% endblock %}
+{% block form %}
+<form action="/admin/{{ adress }}" method="POST">
+    <div>Введите {{ name }}: <input name="categ"></div>
+    <input type="submit" value='ввести'>
+</form>
+{% endblock %}
+{% block out %}
+<h3>Вывод:</h3>
+<ul>
+{% for i in enter %}
+<li>{{ i.name }}</li>
+<form action="/admin/{{ adress }}" method="POST">
+    <button  type="submit" name="del" value="{{ i.id }}">Удалить</button>
+</form>
+{% endfor %}
+</ul>
+{% endblock %}
