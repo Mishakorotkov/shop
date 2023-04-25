@@ -74,9 +74,11 @@ app.use(expressSession({
 
 
 
-app.use(function (req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 app.get('/admin', function(req, res) {
@@ -404,7 +406,7 @@ app.get('/', function(req, res) {
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify([1, 2, 3, 4]));
 });
-//https://ru.stackoverflow.com/questions/483877/%D0%9A%D0%B0%D0%BA-%D0%B2-express-4-x-%D0%BF%D1%80%D0%B8%D0%BD%D1%8F%D1%82%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5-application-json
+
 
 
 app.listen(3000, function() {
