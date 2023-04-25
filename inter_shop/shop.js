@@ -72,6 +72,13 @@ app.use(expressSession({
     resave: false
 }));
 
+
+
+app.use(function (req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+});
+
 app.get('/admin', function(req, res) {
     res.render('admin_enter.html');
 });
