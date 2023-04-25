@@ -393,6 +393,12 @@ app.post('/admin/add', urlencodedParser, function(req, res) {
 
 
 
+app.get('/test', function(req, res) {
+    res.end(JSON.stringify([1, 2, 3, 4]));
+});
+
+
+
 app.listen(3000, function() {
 	console.log('running');
 });
