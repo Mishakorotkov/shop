@@ -464,6 +464,69 @@ app.get('/all_items', function(req, res) {
 
 
 
+app.get('/all_category', function(req, res) {
+    let tags = {fors:['женское', 'мужское', 'детское']};
+    const promise = new Promise((resolve, reject) => {
+        connection.execute(
+            `SELECT name FROM color`,
+            function(err, row) {
+                let mas = [];
+                for(let i = 0; i<row.length;i++){
+                    mas.push(row[i].name);
+                    tags = {...tags, color:mas}
+                }
+            }
+        );
+        connection.execute(
+            `SELECT name FROM creator`,
+            function(err, row) {
+                let mas = [];
+                for(let i = 0; i<row.length;i++){
+                    mas.push(row[i].name);
+                    tags = {...tags, creator:mas}
+                }
+            }
+        );
+        connection.execute(
+            `SELECT name FROM material`,
+            function(err, row) {
+                let mas = [];
+                for(let i = 0; i<row.length;i++){
+                    mas.push(row[i].name);
+                    tags = {...tags, material:mas}
+                }
+            }
+        );
+        connection.execute(
+            `SELECT name FROM size`,
+            function(err, row) {
+                let mas = [];
+                for(let i = 0; i<row.length;i++){
+                    mas.push(row[i].name);
+                    tags = {...tags, size:mas}
+                }
+            }
+        );
+        connection.execute(
+            `SELECT name FROM type`,
+            function(err, row) {
+                let mas = [];
+                for(let i = 0; i<row.length;i++){
+                    mas.push(row[i].name);
+                    tags = {...tags, type:mas}
+                }
+                resolve(tags);
+            }
+        );
+    });
+    promise.then((data) =>{
+        console.log("tags   "+data);
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(data));
+    });
+});
+
+
 app.listen(3000, function() {
 	console.log('running');
 });
