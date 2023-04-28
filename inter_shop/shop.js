@@ -402,9 +402,64 @@ app.post('/admin/add', urlencodedParser, function(req, res) {
 
 
 
-app.get('/', function(req, res) {
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify([1, 2, 3, 4]));
+app.get('/all_items', function(req, res) {
+    let ma = [];
+    let flag = 0;
+    connection.execute(
+        'SELECT id ,name, price, color, creator, material, size, type, fors FROM items',
+        function(err, rows) {
+            const promise = new Promise((resolve, reject) => {
+                for(let i = 0; i<rows.length; i++){
+                    connection.execute(
+                        `SELECT name FROM color WHERE id = ?`,
+                        [rows[i].color],
+                        function(err, row_color) {
+                            connection.execute(
+                                `SELECT name FROM creator WHERE id = ?`,
+                                [rows[i].creator],
+                                function(err, row_creator) {
+                                    connection.execute(
+                                        `SELECT name FROM material WHERE id = ?`,
+                                        [rows[i].material],
+                                        function(err, row_material) {
+                                            connection.execute(
+                                                `SELECT name FROM size WHERE id = ?`,
+                                                [rows[i].size],
+                                                function(err, row_size) {
+                                                    connection.execute(
+                                                        `SELECT name FROM type WHERE id = ?`,
+                                                        [rows[i].type],
+                                                        function(err, row_type) {
+                                                            ma.push({id:rows[i].id ,name:rows[i].name, price:rows[i].price, color:row_color[0].name, creator:row_creator[0].name, material:row_material[0].name, size:row_size[0].name, type:row_type[0].name, fors:rows[i].fors});
+                                                            console.log("1   "+ma)
+                                                            flag=flag+1;
+                                                            if(rows.length == flag){
+                                                                resolve(ma);
+                                                            }
+                                                        }
+                                                    );
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+                //console.log("2   "+ma)
+                console.log('flag '+flag);
+                console.log("length "+rows.length);
+            });
+            promise.then((data) =>{
+                console.log("data   "+data);
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify(data));
+            });
+        }
+    );
+    //res.writeHead(200, {'Content-Type': 'application/json'});
+    //res.end(JSON.stringify([1, 2, 3, 4]));
 });
 
 
