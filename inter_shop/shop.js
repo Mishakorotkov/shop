@@ -3,6 +3,7 @@ import express from "express";
 import nunjucks from 'nunjucks';
 import __dirname from './__dirname.js';
 import expressSession from 'express-session';
+import fileUpload from 'express-fileupload';
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -55,6 +56,7 @@ function posts(sql1, categ, redir, res, del, sql2){
 }
 
 
+
 let admin_enter = 0;
 let app = express();
 const urlencodedParser = express.urlencoded({extended: false});
@@ -72,7 +74,9 @@ app.use(expressSession({
     resave: false
 }));
 
+app.use(fileUpload({}));
 
+app.use(express.static('static'));
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -390,6 +394,8 @@ app.get('/admin/add', function(req, res) {
 
 
 app.post('/admin/add', urlencodedParser, function(req, res) {
+    req.files.image.name = String(req.body.name)+".jpg";
+    req.files.image.mv("static/images/"+req.files.image.name);
     connection.execute(
         'INSERT INTO items(name, price, color, creator, material, size, type, fors) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
         [req.body.name, Number(req.body.price), Number(req.body.color), Number(req.body.creator), Number(req.body.material), Number(req.body.size), Number(req.body.type), req.body.for],
