@@ -10,6 +10,7 @@
     <form action="/admin/add" method="POST" enctype="multipart/form-data">
         <div>Введите название: <input name="name"></div>
         <div>Введите цену: <input name="price"></div>
+        <div>Введите артикул: <input name="articul"></div>
         <div>Введите картинку: <input type="file" name="image"></div>
         {% block form %}{% endblock %}
         <input type="submit" value='добавить'>

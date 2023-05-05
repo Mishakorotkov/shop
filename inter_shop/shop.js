@@ -4,7 +4,8 @@ import nunjucks from 'nunjucks';
 import __dirname from './__dirname.js';
 import expressSession from 'express-session';
 import fileUpload from 'express-fileupload';
-
+import fs from "fs";
+import fetch from "node-fetch";
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -281,7 +282,7 @@ app.get('/admin/items', function(req, res){
     let flag = 0;
     if(admin_enter == 1){
         connection.execute(
-            'SELECT id ,name, price, color, creator, material, size, type, fors FROM items',
+            'SELECT id ,name, price, color, creator, material, size, type, fors, articul FROM items',
             function(err, rows) {
                 const promise = new Promise((resolve, reject) => {
                     for(let i = 0; i<rows.length; i++){
@@ -305,7 +306,7 @@ app.get('/admin/items', function(req, res){
                                                             `SELECT name FROM type WHERE id = ?`,
                                                             [rows[i].type],
                                                             function(err, row_type) {
-                                                                ma.push({id:rows[i].id ,name:rows[i].name, price:rows[i].price, color:row_color[0].name, creator:row_creator[0].name, material:row_material[0].name, size:row_size[0].name, type:row_type[0].name, fors:rows[i].fors});
+                                                                ma.push({id:rows[i].id ,name:rows[i].name, price:rows[i].price, color:row_color[0].name, creator:row_creator[0].name, material:row_material[0].name, size:row_size[0].name, type:row_type[0].name, fors:rows[i].fors, articul:rows[i].articul});
                                                                 console.log("1   "+ma)
                                                                 flag=flag+1;
                                                                 if(rows.length == flag){
@@ -394,11 +395,11 @@ app.get('/admin/add', function(req, res) {
 
 
 app.post('/admin/add', urlencodedParser, function(req, res) {
-    req.files.image.name = String(req.body.name)+".jpg";
+    req.files.image.name = String(req.body.articul)+".jpg";
     req.files.image.mv("static/images/"+req.files.image.name);
     connection.execute(
-        'INSERT INTO items(name, price, color, creator, material, size, type, fors) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
-        [req.body.name, Number(req.body.price), Number(req.body.color), Number(req.body.creator), Number(req.body.material), Number(req.body.size), Number(req.body.type), req.body.for],
+        'INSERT INTO items(name, price, color, creator, material, size, type, fors, articul) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [req.body.name, Number(req.body.price), Number(req.body.color), Number(req.body.creator), Number(req.body.material), Number(req.body.size), Number(req.body.type), req.body.for, req.body.articul],
         function(err, row) {
             console.log(err);
             res.redirect("/admin/add");
@@ -412,7 +413,7 @@ app.get('/all_items', function(req, res) {
     let ma = [];
     let flag = 0;
     connection.execute(
-        'SELECT id ,name, price, color, creator, material, size, type, fors FROM items',
+        'SELECT id ,name, price, color, creator, material, size, type, fors, articul FROM items',
         function(err, rows) {
             const promise = new Promise((resolve, reject) => {
                 for(let i = 0; i<rows.length; i++){
@@ -436,7 +437,7 @@ app.get('/all_items', function(req, res) {
                                                         `SELECT name FROM type WHERE id = ?`,
                                                         [rows[i].type],
                                                         function(err, row_type) {
-                                                            ma.push({id:rows[i].id ,name:rows[i].name, price:rows[i].price, color:row_color[0].name, creator:row_creator[0].name, material:row_material[0].name, size:row_size[0].name, type:row_type[0].name, fors:rows[i].fors});
+                                                            ma.push({id:rows[i].id ,name:rows[i].name, price:rows[i].price, color:row_color[0].name, creator:row_creator[0].name, material:row_material[0].name, size:row_size[0].name, type:row_type[0].name, fors:rows[i].fors, articul:rows[i].articul});
                                                             console.log("1   "+ma)
                                                             flag=flag+1;
                                                             if(rows.length == flag){
@@ -530,6 +531,11 @@ app.get('/all_category', function(req, res) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(data));
     });
+});
+
+
+app.get('/get_user', function(req, res) {
+    let x = fetch('localhost:5173');
 });
 
 
