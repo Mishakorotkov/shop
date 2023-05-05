@@ -16,34 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `items`
+-- Table structure for table `material`
 --
 
-DROP TABLE IF EXISTS `items`;
+DROP TABLE IF EXISTS `material`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `items` (
+CREATE TABLE `material` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `price` int NOT NULL,
-  `color` int NOT NULL,
-  `creator` int NOT NULL,
-  `material` int NOT NULL,
-  `size` int NOT NULL,
-  `type` int NOT NULL,
-  `fors` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `items`
+-- Dumping data for table `material`
 --
 
-LOCK TABLES `items` WRITE;
-/*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (4,'Коротков Михаил',2000,6,1,4,1,2,'женское');
-/*!40000 ALTER TABLE `items` ENABLE KEYS */;
+LOCK TABLES `material` WRITE;
+/*!40000 ALTER TABLE `material` DISABLE KEYS */;
+INSERT INTO `material` VALUES (4,'кожа'),(5,'туфта');
+/*!40000 ALTER TABLE `material` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -55,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-21 17:28:09
+-- Dump completed on 2023-05-05 23:10:15

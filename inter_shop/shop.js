@@ -534,8 +534,16 @@ app.get('/all_category', function(req, res) {
 });
 
 
-app.get('/get_user', function(req, res) {
-    let x = fetch('localhost:5173');
+app.get('/regestration', function(req, res) {
+    
+});
+
+app.get('/login', function(req, res) {
+    
+});
+
+app.get('/kor', function(req, res) {
+    console.log(req.query);
 });
 
 
