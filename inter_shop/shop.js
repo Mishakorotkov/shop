@@ -4,13 +4,16 @@ import nunjucks from 'nunjucks';
 import __dirname from './__dirname.js';
 import expressSession from 'express-session';
 import fileUpload from 'express-fileupload';
-import fs from "fs";
-import fetch from "node-fetch";
+// import fs from "fs";
+// import fetch from "node-fetch";
+import cors from 'cors';
+const jsonParser = express.json();
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'shop',
-    password: 'pipyka12345'
+    // password: '0000',
+    password: 'pipyka12345',
 });
 
 function gets(sql, head, adress, name, res){
@@ -56,8 +59,6 @@ function posts(sql1, categ, redir, res, del, sql2){
     }
 }
 
-
-
 let admin_enter = 0;
 let app = express();
 const urlencodedParser = express.urlencoded({extended: false});
@@ -75,16 +76,14 @@ app.use(expressSession({
     resave: false
 }));
 
+app.use(cors({                          //Отключение CORS'а.
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+}));
+
 app.use(fileUpload({}));
 
 app.use(express.static('static'));
-
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
 
 app.get('/admin', function(req, res) {
     res.render('admin_enter.html');
@@ -534,18 +533,20 @@ app.get('/all_category', function(req, res) {
 });
 
 
-app.get('/regestration', function(req, res) {
-    
+app.post('/registration', jsonParser, (req, res) => {
+    // console.log(req.body);
+    (true !== false) && res.send(req.body);     //Тоже самое что и авторизация, только с добавлением в БД
 });
 
-app.get('/login', function(req, res) {
-    
+app.post('/login', jsonParser, function(req, res) {
+    // console.log(req.body);
+    (true !== false) && res.send(req.body);     //Проверка, при истинности которой возращаются какие-нибудь ещё данные пользователя
 });
 
-app.get('/kor', function(req, res) {
+//Добавление в корзину. 
+app.get('/addToCart', function(req, res) {
     console.log(req.query);
 });
-
 
 app.listen(3000, function() {
 	console.log('running');
