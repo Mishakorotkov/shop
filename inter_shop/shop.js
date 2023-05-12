@@ -535,12 +535,26 @@ app.get('/all_category', function(req, res) {
 
 app.post('/registration', jsonParser, (req, res) => {
     // console.log(req.body);
-    (true !== false) && res.send(req.body);     //Тоже самое что и авторизация, только с добавлением в БД
+    connection.execute(
+        'INSERT INTO user(name, password) VALUES(?, ?)',
+        [req.body.name, req.body.password],
+        function(err, row) {
+            console.log(err.message);
+            if(err.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: user.name"){
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({message:"логин должен быть уникален"}));
+            }
+        }
+    );
 });
 
 app.post('/login', jsonParser, function(req, res) {
-    // console.log(req.body);
-    (true !== false) && res.send(req.body);     //Проверка, при истинности которой возращаются какие-нибудь ещё данные пользователя
+    connection.execute(
+        `SELECT name FROM user`,
+        function(err, row) {
+            console.log(row);
+        }
+    );
 });
 
 //Добавление в корзину. 
