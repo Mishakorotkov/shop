@@ -539,10 +539,18 @@ app.post('/registration', jsonParser, (req, res) => {
         'INSERT INTO user(name, password) VALUES(?, ?)',
         [req.body.name, req.body.password],
         function(err, row) {
-            console.log(err.message);
-            if(err.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: user.name"){
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({message:"логин должен быть уникален"}));
+            if(err){
+                console.log(err);
+                res.send({error: err.sqlMessage});
+            }
+            else if(req.body.name.length<=6 || req.body.password.length<=6){
+                res.send({error: "Слишком короткий логин или пароль"});
+            }
+            else if(req.body.name.length>=24 || req.body.password.length>=24){
+                res.send({error: "Слишком длинный логин или пароль"});
+            }
+            else {
+                res.send(req.body);
             }
         }
     );
@@ -550,16 +558,64 @@ app.post('/registration', jsonParser, (req, res) => {
 
 app.post('/login', jsonParser, function(req, res) {
     connection.execute(
-        `SELECT name FROM user`,
+        `SELECT name, password FROM user WHERE name=?`,
+        [req.body.name],
         function(err, row) {
-            console.log(row);
+            if(err){
+                console.log(err);
+                res.send({error: err.sqlMessage});
+            }
+            else{
+                if(req.body.password = row[0].password){
+                    res.send(row);
+                }
+                else{
+                    res.send({error: "Неправильный пароль"});
+                }
+            }
         }
     );
 });
 
 //Добавление в корзину. 
-app.get('/addToCart', function(req, res) {
-    console.log(req.query);
+app.get('/send_cart', function(req, res) {
+    let user_id = req.query.userID;
+    connection.execute(
+        `SELECT item_articul FROM cart WHERE user_id=?`,
+        [user_id],
+        function(err, row) {
+            res.send(row);
+        }
+    );
+});
+
+app.get('/get_item', function(req, res) {
+    let itemArticul = req.query.itemArticul;
+    connection.execute(
+        `SELECT * FROM items WHERE articul=?`,
+        [itemArticul],
+        function(err, row) {
+            res.send(row);
+        }
+    );
+    //я получаю артикул и по нему возвращаю отдельный товар
+});
+
+
+app.post('/get_item', jsonParser, function(req, res) {
+    //сделать здесь добавление в корзину, т.к. get_item это обращение к конкретному товару и поэтому будет удобно
+    let user_id = req.body.userID;
+    let item_articul = req.query.itemArticul;
+    connection.execute(
+        'INSERT INTO cart(user_id, item_articul) VALUES(?, ?)',
+        [user_id, item_articul],
+        function(err, row) {
+            if(err){
+                console.log(err.sqlMessage);
+            }
+            console.log("предмет добавлен в корзину");
+        }
+    );
 });
 
 app.listen(3000, function() {
