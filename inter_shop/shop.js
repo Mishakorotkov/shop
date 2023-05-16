@@ -578,18 +578,18 @@ app.post('/login', jsonParser, function(req, res) {
 });
 
 //Добавление в корзину. 
-app.get('/send_cart', function(req, res) {
-    let user_id = req.query.userID;
+app.post('/get_cart', jsonParser, function(req, res) {
+    let user_login = req.query.userLogin;
     connection.execute(
-        `SELECT item_articul FROM cart WHERE user_id=?`,
-        [user_id],
+        `SELECT item_articul FROM cart WHERE user_login=?`,
+        [user_login],
         function(err, row) {
             res.send(row);
         }
     );
 });
 
-app.get('/get_item', function(req, res) {
+app.post('/get_item', jsonParser, function(req, res) {
     let itemArticul = req.query.itemArticul;
     connection.execute(
         `SELECT * FROM items WHERE articul=?`,
@@ -598,17 +598,15 @@ app.get('/get_item', function(req, res) {
             res.send(row);
         }
     );
-    //я получаю артикул и по нему возвращаю отдельный товар
 });
 
 
-app.post('/get_item', jsonParser, function(req, res) {
-    //сделать здесь добавление в корзину, т.к. get_item это обращение к конкретному товару и поэтому будет удобно
-    let user_id = req.body.userID;
-    let item_articul = req.query.itemArticul;
+app.post('/add_to_cart', jsonParser, function(req, res) {
+    let user_login = req.body.userLogin;
+    let item_articul = req.body.itemArticul;
     connection.execute(
-        'INSERT INTO cart(user_id, item_articul) VALUES(?, ?)',
-        [user_id, item_articul],
+        'INSERT INTO cart(user_login, item_articul) VALUES(?, ?)',
+        [user_login, item_articul],
         function(err, row) {
             if(err){
                 console.log(err.sqlMessage);
