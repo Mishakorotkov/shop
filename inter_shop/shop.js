@@ -453,7 +453,6 @@ app.get('/all_items', function(req, res) {
                         }
                     );
                 }
-                //console.log("2   "+ma)
                 console.log('flag '+flag);
                 console.log("length "+rows.length);
             });
@@ -464,13 +463,11 @@ app.get('/all_items', function(req, res) {
             });
         }
     );
-    //res.writeHead(200, {'Content-Type': 'application/json'});
-    //res.end(JSON.stringify([1, 2, 3, 4]));
 });
 
 
 
-app.get('/all_category', function(req, res) {
+app.get('/all_category', urlencodedParser, function(req, res) {
     let tags = {fors:['женское', 'мужское', 'детское']};
     const promise = new Promise((resolve, reject) => {
         connection.execute(
@@ -566,8 +563,8 @@ app.post('/login', jsonParser, function(req, res) {
                 res.send({error: err.sqlMessage});
             }
             else{
-                if(req.body.password = row[0].password){
-                    res.send(row);
+                if(req.body.password == row[0].password){
+                    res.send(row[0]);
                 }
                 else{
                     res.send({error: "Неправильный пароль"});
@@ -577,25 +574,54 @@ app.post('/login', jsonParser, function(req, res) {
     );
 });
 
-//Добавление в корзину. 
 app.post('/get_cart', jsonParser, function(req, res) {
-    let user_login = req.query.userLogin;
+    let user_login = req.body.userLogin;
     connection.execute(
         `SELECT item_articul FROM cart WHERE user_login=?`,
         [user_login],
-        function(err, row) {
-            res.send(row);
+        function(err, row) {    //Нужно чтобы возвращало массив обьектов в корзине
+            // res.send(row);
+            res.send([
+                {id: 642,
+                name: 'KUMFOrT',
+                articul: 'DK2US0',
+                price: 14000,
+                color: 'red',
+                creator: 'nike',
+                size: 34,
+                fors: 'man',
+                type: 'sneakers',
+                material: 'dirt',
+                },
+                {id: 1231,
+                name: 'DAEDA',
+                articul: 'XW441G',
+                price: 2411,
+                color: 'black',
+                creator: 'jeja',
+                size: 293,
+                fors: 'child',
+                type: 'sapog',
+                material: 'wood',
+                },
+            ]);
         }
     );
 });
 
-app.post('/get_item', jsonParser, function(req, res) {
+app.post('/delete_item_from_cart', jsonParser, (req, res) => {  //Удаляет из корзины пользователя предмет и возвращает новый список
+    const item_articul = req.body.itemArticul;
+    const user_login = req.body.userLogin;
+    res.send([]);
+})
+
+app.get('/get_item', urlencodedParser, function(req, res) {
     let itemArticul = req.query.itemArticul;
     connection.execute(
         `SELECT * FROM items WHERE articul=?`,
         [itemArticul],
         function(err, row) {
-            res.send(row);
+            res.end(JSON.stringify(row[0]));
         }
     );
 });
@@ -611,6 +637,7 @@ app.post('/add_to_cart', jsonParser, function(req, res) {
             if(err){
                 console.log(err.sqlMessage);
             }
+            res.send({message: 'предмет добавлен в корзину'})
             console.log("предмет добавлен в корзину");
         }
     );
