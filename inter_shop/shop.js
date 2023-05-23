@@ -1,18 +1,13 @@
 import mysql from 'mysql2';
 import express from "express";
 import nunjucks from 'nunjucks';
-import __dirname from './__dirname.js';
-import expressSession from 'express-session';
 import fileUpload from 'express-fileupload';
-// import fs from "fs";
-// import fetch from "node-fetch";
 import cors from 'cors';
 const jsonParser = express.json();
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'shop',
-    // password: '0000',
     password: 'pipyka12345',
 });
 
@@ -69,12 +64,6 @@ nunjucks.configure('templates', {
     autoescape: true,
     express: app
 });
-
-app.use(expressSession({
-	secret: "12345",
-    saveUninitialized: true,
-    resave: false
-}));
 
 app.use(cors({                          //Отключение CORS'а.
     origin: 'http://localhost:5173',
@@ -453,16 +442,19 @@ app.get('/all_items', function(req, res) {
                         }
                     );
                 }
+                //console.log("2   "+ma)
                 console.log('flag '+flag);
                 console.log("length "+rows.length);
             });
             promise.then((data) =>{
                 console.log("data   "+data);
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify(data));
+                //res.writeHead(200, {'Content-Type': 'application/json'});
+                res.send(data);
             });
         }
     );
+    //res.writeHead(200, {'Content-Type': 'application/json'});
+    //res.end(JSON.stringify([1, 2, 3, 4]));
 });
 
 
@@ -524,8 +516,8 @@ app.get('/all_category', urlencodedParser, function(req, res) {
     });
     promise.then((data) =>{
         console.log("tags   "+data);
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(data));
+        //res.writeHead(200, {'Content-Type': 'application/json'});
+        res.send(data);
     });
 });
 
@@ -574,40 +566,19 @@ app.post('/login', jsonParser, function(req, res) {
     );
 });
 
+//Добавление в корзину. 
 app.post('/get_cart', jsonParser, function(req, res) {
     let user_login = req.body.userLogin;
     connection.execute(
         `SELECT item_articul FROM cart WHERE user_login=?`,
         [user_login],
-        function(err, row) {    //Нужно чтобы возвращало массив обьектов в корзине
-            // res.send(row);
-            res.send([
-                {id: 642,
-                name: 'KUMFOrT',
-                articul: 'DK2US0',
-                price: 14000,
-                color: 'red',
-                creator: 'nike',
-                size: 34,
-                fors: 'man',
-                type: 'sneakers',
-                material: 'dirt',
-                },
-                {id: 1231,
-                name: 'DAEDA',
-                articul: 'XW441G',
-                price: 2411,
-                color: 'black',
-                creator: 'jeja',
-                size: 293,
-                fors: 'child',
-                type: 'sapog',
-                material: 'wood',
-                },
-            ]);
+        function(err, row) {
+            //отправить товары
+            res.send(row[0]);
         }
     );
 });
+
 
 app.post('/delete_item_from_cart', jsonParser, (req, res) => {  //Удаляет из корзины пользователя предмет и возвращает новый список
     const item_articul = req.body.itemArticul;
@@ -615,13 +586,13 @@ app.post('/delete_item_from_cart', jsonParser, (req, res) => {  //Удаляет
     res.send([]);
 })
 
-app.get('/get_item', urlencodedParser, function(req, res) {
-    let itemArticul = req.query.itemArticul;
+app.post('/get_item', jsonParser, function(req, res) {
+    let itemArticul = req.body.itemArticul;
     connection.execute(
         `SELECT * FROM items WHERE articul=?`,
         [itemArticul],
         function(err, row) {
-            res.end(JSON.stringify(row[0]));
+            res.send(row[0]);//проверить работу
         }
     );
 });
@@ -637,7 +608,7 @@ app.post('/add_to_cart', jsonParser, function(req, res) {
             if(err){
                 console.log(err.sqlMessage);
             }
-            res.send({message: 'предмет добавлен в корзину'})
+            res.send({message: 'предмет добавлен в корзину'});
             console.log("предмет добавлен в корзину");
         }
     );
