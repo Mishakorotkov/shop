@@ -65,7 +65,7 @@ nunjucks.configure('templates', {
     express: app
 });
 
-app.use(cors({                          //Отключение CORS'а.
+app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
 }));
@@ -105,18 +105,6 @@ app.post('/admin/main', urlencodedParser, function(req, res) {
 
 app.get('/admin/color', function(req, res) {
     gets('SELECT id, name FROM color', "добавление цвета", "color", "название цвета", res);
-    /*if(admin_enter == 1){
-        connection.execute(
-            'SELECT name FROM color',
-            function(err, rows) {
-                console.log(rows);
-                res.render('category.njk', {head:"добавление цвета", adress:"color", name:"название цвета", enter:rows});
-            }
-        );
-    }
-    else{
-        res.redirect('/admin');
-    }*/
 });
 
 app.post('/admin/color', urlencodedParser, function(req, res) {
@@ -130,31 +118,12 @@ app.post('/admin/color', urlencodedParser, function(req, res) {
         posts(`INSERT INTO color(name) VALUES(?)`, 0, "color", res, Number(req.body.del), `DELETE FROM color WHERE id=?`);
         console.log("del_prov");
     }
-    /*connection.execute(
-        `INSERT INTO color(name) VALUES(?)`,
-        [req.body.categ],
-        function(err, rows) {
-            console.log("данные вставлены");
-        }
-    );*/
 });
 
 
 
 app.get('/admin/material', function(req, res) {
     gets('SELECT id, name FROM material', "добавление материала", "material", "название материала", res);
-    /*if(admin_enter == 1){
-        connection.execute(
-            'SELECT name FROM material',
-            function(err, rows) {
-                console.log(rows);
-                res.render('category.njk', {head:"добавление материала", adress:"material", name:"название материала", enter:rows});
-            }
-        );
-    }
-    else{
-        res.redirect('/admin');
-    }*/
 });
 
 app.post('/admin/material', urlencodedParser, function(req, res) {
@@ -171,21 +140,9 @@ app.post('/admin/material', urlencodedParser, function(req, res) {
 });
 
 
-//Я ЕБЛАН, последние две категории не работают
 app.get('/admin/creator', function(req, res) {
     gets('SELECT id, name FROM creator', "добавление создателя", "creator", "создателя", res);
-    /*if(admin_enter == 1){
-        connection.execute(
-            'SELECT name FROM creator',
-            function(err, rows) {
-                console.log(rows);
-                res.render('category.njk', {head:"добавление создателя", adress:"creator", name:"создателя", enter:rows});
-            }
-        );
-    }
-    else{
-        res.redirect('/admin');
-    }*/
+
 });
 
 app.post('/admin/creator', urlencodedParser, function(req, res) {
@@ -205,18 +162,6 @@ app.post('/admin/creator', urlencodedParser, function(req, res) {
 
 app.get('/admin/type', function(req, res) {
     gets('SELECT id, name FROM type', "добавление типа", "type", "тип", res);
-    /*if(admin_enter == 1){
-        connection.execute(
-            'SELECT name FROM type',
-            function(err, rows) {
-                console.log(rows);
-                res.render('category.njk', {head:"добавление типа", adress:"type", name:"тип", enter:rows});
-            }
-        );
-    }
-    else{
-        res.redirect('/admin');
-    }*/
 });
 
 app.post('/admin/type', urlencodedParser, function(req, res) {
@@ -236,18 +181,6 @@ app.post('/admin/type', urlencodedParser, function(req, res) {
 
 app.get('/admin/size', function(req, res) {
     gets('SELECT id, name FROM size', "добавление размера", "size", "размер", res);
-    /*if(admin_enter == 1){
-        connection.execute(
-            'SELECT name FROM size',
-            function(err, rows) {
-                console.log(rows);
-                res.render('category.njk', {head:"добавление размера", adress:"size", name:"размер", enter:rows});
-            }
-        );
-    }
-    else{
-        res.redirect('/admin');
-    }*/
 });
 
 app.post('/admin/size', urlencodedParser, function(req, res) {
@@ -311,7 +244,6 @@ app.get('/admin/items', function(req, res){
                             }
                         );
                     }
-                    //console.log("2   "+ma)
                     console.log('flag '+flag);
                     console.log("length "+rows.length);
                 });
@@ -442,19 +374,15 @@ app.get('/all_items', function(req, res) {
                         }
                     );
                 }
-                //console.log("2   "+ma)
                 console.log('flag '+flag);
                 console.log("length "+rows.length);
             });
             promise.then((data) =>{
                 console.log("data   "+data);
-                //res.writeHead(200, {'Content-Type': 'application/json'});
                 res.send(data);
             });
         }
     );
-    //res.writeHead(200, {'Content-Type': 'application/json'});
-    //res.end(JSON.stringify([1, 2, 3, 4]));
 });
 
 
@@ -516,14 +444,12 @@ app.get('/all_category', urlencodedParser, function(req, res) {
     });
     promise.then((data) =>{
         console.log("tags   "+data);
-        //res.writeHead(200, {'Content-Type': 'application/json'});
         res.send(data);
     });
 });
 
 
 app.post('/registration', jsonParser, (req, res) => {
-    // console.log(req.body);
     connection.execute(
         'INSERT INTO user(name, password) VALUES(?, ?)',
         [req.body.name, req.body.password],
@@ -566,33 +492,72 @@ app.post('/login', jsonParser, function(req, res) {
     );
 });
 
-//Добавление в корзину. 
-app.post('/get_cart', jsonParser, function(req, res) {
+app.post('/get_cart', urlencodedParser, function(req, res) {
+    let cart_tovari = [];
     let user_login = req.body.userLogin;
     connection.execute(
         `SELECT item_articul FROM cart WHERE user_login=?`,
         [user_login],
         function(err, row) {
-            //отправить товары
-            res.send(row[0]);
+            console.log(row);
+            for(let i = 1; i<=row.length; i++){
+                connection.execute(
+                    `SELECT id, name, price, color, creator, material, size, type, fors, articul FROM items WHERE articul=?`,
+                    [row[i-1].item_articul],
+                    function(err, rows) {
+                        console.log(row);
+                        cart_tovari.push(rows);
+                        if(row.length == i){
+                            res.send(cart_tovari[0]);
+                        }
+                    }
+                );
+            }
         }
     );
 });
 
 
-app.post('/delete_item_from_cart', jsonParser, (req, res) => {  //Удаляет из корзины пользователя предмет и возвращает новый список
+app.post('/delete_item_from_cart', jsonParser, (req, res) => {  
     const item_articul = req.body.itemArticul;
     const user_login = req.body.userLogin;
+    let spisok_cart = [];
+    connection.execute(
+        `DELETE FROM cart WHERE item_articul=? AND user_login=?`,
+        [item_articul, user_login],
+        function(err, rows) {
+            connection.execute(
+                `SELECT item_articul FROM cart WHERE user_login=?`,
+                [user_login],
+                function(err, row) {
+                    console.log(row);
+                    for(let i = 1; i<=row.length; i++){
+                        connection.execute(
+                            `SELECT id, name, price, color, creator, material, size, type, fors, articul FROM items WHERE articul=?`,
+                            [row[i-1].item_articul],
+                            function(err, rows) {
+                                console.log(row);
+                                spisok_cart.push(rows);
+                                if(row.length == i){
+                                    res.send(spisok_cart[0]);
+                                }
+                            }
+                        );
+                    }
+                }
+            );
+        }
+    );
     res.send([]);
 })
 
-app.post('/get_item', jsonParser, function(req, res) {
+app.get('/get_item', urlencodedParser, function(req, res) {
     let itemArticul = req.body.itemArticul;
     connection.execute(
         `SELECT * FROM items WHERE articul=?`,
         [itemArticul],
         function(err, row) {
-            res.send(row[0]);//проверить работу
+            res.send(row[0]);
         }
     );
 });
