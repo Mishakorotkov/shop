@@ -316,7 +316,7 @@ app.get('/admin/add', function(req, res) {
 
 app.post('/admin/add', urlencodedParser, function(req, res) {
     req.files.image.name = String(req.body.articul)+".jpg";
-    req.files.image.mv("static/images/"+req.files.image.name);
+    req.files.image.mv("../public/itemImages/"+req.files.image.name);
     connection.execute(
         'INSERT INTO items(name, price, color, creator, material, size, type, fors, articul) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [req.body.name, Number(req.body.price), Number(req.body.color), Number(req.body.creator), Number(req.body.material), Number(req.body.size), Number(req.body.type), req.body.for, req.body.articul],
@@ -451,24 +451,37 @@ app.get('/all_category', urlencodedParser, function(req, res) {
 
 app.post('/registration', jsonParser, (req, res) => {
     connection.execute(
-        'INSERT INTO user(name, password) VALUES(?, ?)',
-        [req.body.name, req.body.password],
+        'SELECT name FROM user',
         function(err, row) {
             if(err){
-                console.log(err);
                 res.send({error: err.sqlMessage});
             }
-            else if(req.body.name.length<=6 || req.body.password.length<=6){
-                res.send({error: "Слишком короткий логин или пароль"});
-            }
-            else if(req.body.name.length>=24 || req.body.password.length>=24){
-                res.send({error: "Слишком длинный логин или пароль"});
-            }
-            else {
-                res.send(req.body);
+            for(let i = 0; i<row.length; i++){
+                if(row[i].name == req.body.name){
+                    res.send({error: "Такой логин уже занят"});
+                }
             }
         }
     );
+    if(req.body.name.length<=6 || req.body.password.length<=6){
+        res.send({error: "Слишком короткий логин или пароль"});
+    }
+    else if(req.body.name.length>=24 || req.body.password.length>=24){
+        res.send({error: "Слишком длинный логин или пароль"});
+    }
+    else {
+        res.send(req.body);
+        connection.execute(
+            'INSERT INTO user(name, password) VALUES(?, ?)',
+            [req.body.name, req.body.password],
+            function(err, row) {
+                if(err){
+                    console.log(err);
+                    res.send({error: err.sqlMessage});
+                }
+            }
+        );
+    }
 });
 
 app.post('/login', jsonParser, function(req, res) {
@@ -499,16 +512,15 @@ app.post('/get_cart', jsonParser, function(req, res) {
         `SELECT item_articul FROM cart WHERE user_login=?`,
         [user_login],
         function(err, row) {
-            console.log(row);
+            if (row.length == 0) {res.sendStatus(204); return;}
             for(let i = 1; i<=row.length; i++){
                 connection.execute(
                     `SELECT id, name, price, color, creator, material, size, type, fors, articul FROM items WHERE articul=?`,
                     [row[i-1].item_articul],
                     function(err, rows) {
-                        console.log(row);
-                        cart_tovari.push(rows);
-                        if(row.length == i){
-                            res.send(cart_tovari[0]);
+                        cart_tovari.push(rows[0]);
+                        if (i==row.length) {
+                            res.send(cart_tovari);
                         }
                     }
                 );
@@ -538,8 +550,12 @@ app.post('/delete_item_from_cart', jsonParser, (req, res) => {
                             function(err, rows) {
                                 console.log(row);
                                 spisok_cart.push(rows);
-                                if(row.length == i){
-                                    res.send(spisok_cart[0]);
+                                if(row.length == i && spisok_cart.length !== 0){
+                                    if (spisok_cart[0].length == 0) {
+                                        res.send(204);
+                                    } else {
+                                        res.send(spisok_cart[0]);
+                                    }
                                 }
                             }
                         );
@@ -548,7 +564,6 @@ app.post('/delete_item_from_cart', jsonParser, (req, res) => {
             );
         }
     );
-    res.send([]);
 })
 
 app.get('/get_item', urlencodedParser, function(req, res) {
