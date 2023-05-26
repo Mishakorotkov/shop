@@ -492,7 +492,7 @@ app.post('/login', jsonParser, function(req, res) {
     );
 });
 
-app.post('/get_cart', urlencodedParser, function(req, res) {
+app.post('/get_cart', jsonParser, function(req, res) {
     let cart_tovari = [];
     let user_login = req.body.userLogin;
     connection.execute(
@@ -552,7 +552,7 @@ app.post('/delete_item_from_cart', jsonParser, (req, res) => {
 })
 
 app.get('/get_item', urlencodedParser, function(req, res) {
-    let itemArticul = req.body.itemArticul;
+    let itemArticul = req.query.itemArticul;
     connection.execute(
         `SELECT * FROM items WHERE articul=?`,
         [itemArticul],
