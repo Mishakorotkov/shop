@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
     database: 'shop',
     password: 'pipyka12345',
 });
-
+//амоммм
 function gets(sql, head, adress, name, res){
     if(admin_enter == 1){
         connection.execute(
@@ -58,7 +58,6 @@ let admin_enter = 0;
 let app = express();
 const urlencodedParser = express.urlencoded({extended: false});
 
-let session;
 
 nunjucks.configure('templates', {
     autoescape: true,
@@ -72,7 +71,7 @@ app.use(cors({
 
 app.use(fileUpload({}));
 
-app.use(express.static('static'));
+//app.use(express.static('static'));
 
 app.get('/admin', function(req, res) {
     res.render('admin_enter.html');
